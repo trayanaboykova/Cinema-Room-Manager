@@ -1,27 +1,33 @@
 package cinema;
 
+import java.util.Scanner;
+
 public class Cinema {
     public static void main(String[] args) {
-        int rows = 7;
-        int seatsPerRow = 8;
+        Scanner scanner = new Scanner(System.in);
 
-        // Title
-        System.out.println("Cinema:");
+        // Read input
+        System.out.println("Enter the number of rows:");
+        int rows = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter the number of seats in each row:");
+        int seatsPerRow = Integer.parseInt(scanner.nextLine());
 
-        // Header row (seat numbers)
-        System.out.print("  "); // two spaces to align under the title
-        for (int seat = 1; seat <= seatsPerRow; seat++) {
-            System.out.print(seat + " ");
+        int totalSeats = rows * seatsPerRow;
+        int totalIncome;
+
+        if (totalSeats <= 60) {
+            // Small room: all tickets $10
+            totalIncome = totalSeats * 10;
+        } else {
+            // Large room: front half $10, back half $8
+            int frontHalfRows = rows / 2;
+            int backHalfRows = rows - frontHalfRows;
+            totalIncome = frontHalfRows * seatsPerRow * 10
+                    + backHalfRows  * seatsPerRow * 8;
         }
-        System.out.println();
 
-        // Each row: row number + seats ("S")
-        for (int row = 1; row <= rows; row++) {
-            System.out.print(row + " ");
-            for (int seat = 1; seat <= seatsPerRow; seat++) {
-                System.out.print("S ");
-            }
-            System.out.println();
-        }
+        // Output
+        System.out.println("Total income:");
+        System.out.println("$" + totalIncome);
     }
 }
