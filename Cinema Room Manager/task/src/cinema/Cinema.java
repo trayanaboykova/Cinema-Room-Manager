@@ -12,7 +12,12 @@ public class Cinema {
         System.out.println("Enter the number of seats in each row:");
         int seatsPerRow = Integer.parseInt(scanner.nextLine());
 
-        // Initialize the seating chart to all 'S'
+        int totalSeats = rows * seatsPerRow;
+        int totalIncome = calculateTotalIncome(rows, seatsPerRow);
+        int currentIncome = 0;
+        int purchasedTickets = 0;
+
+        // 2) Initialize seating chart
         char[][] seats = new char[rows][seatsPerRow];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < seatsPerRow; j++) {
@@ -20,42 +25,68 @@ public class Cinema {
             }
         }
 
-        // 2) Menu loop
+        // 3) Menu loop
         while (true) {
             System.out.println();
             System.out.println("1. Show the seats");
             System.out.println("2. Buy a ticket");
+            System.out.println("3. Statistics");
             System.out.println("0. Exit");
             int choice = Integer.parseInt(scanner.nextLine());
 
             if (choice == 0) {
-                // Exit the program
+                // Exit
                 break;
             } else if (choice == 1) {
-                // Show current seating
+                // Show seating
                 printCinema(seats);
             } else if (choice == 2) {
-                // Buy a ticket
-                System.out.println();
-                System.out.println("Enter a row number:");
-                int chosenRow = Integer.parseInt(scanner.nextLine());
-                System.out.println("Enter a seat number in that row:");
-                int chosenSeat = Integer.parseInt(scanner.nextLine());
+                // Buy ticket with validation
+                int chosenRow, chosenSeat;
+                while (true) {
+                    System.out.println();
+                    System.out.println("Enter a row number:");
+                    chosenRow = Integer.parseInt(scanner.nextLine());
+                    System.out.println("Enter a seat number in that row:");
+                    chosenSeat = Integer.parseInt(scanner.nextLine());
+
+                    if (chosenRow < 1 || chosenRow > rows
+                            || chosenSeat < 1 || chosenSeat > seatsPerRow) {
+                        System.out.println();
+                        System.out.println("Wrong input!");
+                    } else if (seats[chosenRow - 1][chosenSeat - 1] == 'B') {
+                        System.out.println();
+                        System.out.println("That ticket has already been purchased!");
+                    } else {
+                        break;
+                    }
+                }
 
                 int price = calculateTicketPrice(rows, seatsPerRow, chosenRow);
+                seats[chosenRow - 1][chosenSeat - 1] = 'B';
+                purchasedTickets++;
+                currentIncome += price;
+
                 System.out.println();
                 System.out.println("Ticket price: $" + price);
 
-                // Mark the seat as bought
-                seats[chosenRow - 1][chosenSeat - 1] = 'B';
+            } else if (choice == 3) {
+                // Statistics
+                double percentage = purchasedTickets * 100.0 / totalSeats;
+
+                System.out.println();
+                System.out.println("Number of purchased tickets: " + purchasedTickets);
+                System.out.println("Percentage: " + String.format("%.2f", percentage) + "%");
+                System.out.println("Current income: $" + currentIncome);
+                System.out.println("Total income: $" + totalIncome);
+
             } else {
-                // Invalid option
-                System.out.println("Wrong choice! Please enter 0, 1, or 2.");
+                // Invalid menu choice
+                System.out.println("Wrong choice! Please enter 0, 1, 2, or 3.");
             }
         }
     }
 
-    // Prints the "Cinema:" header and the current seats array
     private static void printCinema(char[][] seats) {
         int rows = seats.length;
         int cols = seats[0].length;
@@ -77,7 +108,6 @@ public class Cinema {
         }
     }
 
-    // Calculates the ticket price using the same rules as before
     private static int calculateTicketPrice(int totalRows, int seatsPerRow, int chosenRow) {
         int totalSeats = totalRows * seatsPerRow;
         if (totalSeats <= 60) {
@@ -85,6 +115,18 @@ public class Cinema {
         } else {
             int frontHalf = totalRows / 2;
             return (chosenRow <= frontHalf) ? 10 : 8;
+        }
+    }
+
+    private static int calculateTotalIncome(int rows, int seatsPerRow) {
+        int totalSeats = rows * seatsPerRow;
+        if (totalSeats <= 60) {
+            return totalSeats * 10;
+        } else {
+            int frontHalf = rows / 2;
+            int backHalf = rows - frontHalf;
+            return frontHalf * seatsPerRow * 10
+                    + backHalf * seatsPerRow * 8;
         }
     }
 }
